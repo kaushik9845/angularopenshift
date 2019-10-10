@@ -1,16 +1,15 @@
 #!/bin/bash
-echo "Before assembling"
 
-/usr/libexec/s2i/assemble
-rc=$?
+echo "Custom assembling"
 
-if [ $rc -eq 0 ]; then
-    echo "After successful assembling"
-else
-    echo "After failed assembling"
-	echo "---> Building in production mode"
-	npm run build --if-present
-	fix-permissions /opt/app-root
-fi
 
-exit $rc
+echo "---> Installing application source"
+cp -Rfp /tmp/src/. ./
+npm config set registry http://registry.npmjs.org/
+npm config set loglevel warn
+npm install
+ng build --prod --base-href /oms/
+fix-permissions /opt/app-root
+
+exit 0
+
